@@ -179,7 +179,7 @@ a{color:inherit}
 .jcard{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:14px 16px}
 .jcard.u-alta::before,.jcard.u-media::before{content:"";position:absolute;inset:0 auto 0 0;width:4px}
 .jcard.u-alta::before{background:var(--danger)} .jcard.u-media::before{background:var(--warning)}
-.jcard .customer{font-size:15.5px;font-weight:640;letter-spacing:-.01em;text-align:left;cursor:pointer;background:none;border:0;padding:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jcard .customer{font-size:17px;font-weight:700;letter-spacing:-.01em;text-align:left;cursor:pointer;background:none;border:0;padding:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .jcard .customer:hover{text-decoration:underline;text-underline-offset:3px}
 .date-tile{width:50px;flex:none;border-radius:9px;text-align:center;line-height:1;padding:7px 0 6px;background:var(--info-soft);color:var(--info-text);border:1px solid var(--info-line)}
 .date-tile b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -193,6 +193,9 @@ a{color:inherit}
 .meta{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--text-2);font-size:13px}
 .meta span{display:inline-flex;align-items:center;gap:5px;min-width:0}
 .meta b{color:var(--text);font-weight:620}
+.jcard.done{opacity:.72}
+.jcard .materials{font-size:14px;color:#334155}
+.badge .lucide{flex-shrink:0}
 
 /* calendar board */
 .board-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface);max-height:calc(100dvh - 260px)}

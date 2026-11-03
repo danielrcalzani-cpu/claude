@@ -183,7 +183,7 @@ a{color:inherit}
 .jcard{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:10px;padding:14px 16px}
 .jcard.u-alta::before,.jcard.u-media::before{content:"";position:absolute;inset:0 auto 0 0;width:4px}
 .jcard.u-alta::before{background:var(--danger)} .jcard.u-media::before{background:var(--warning)}
-.jcard .customer{font-size:15.5px;font-weight:640;letter-spacing:-.01em;text-align:left;cursor:pointer;background:none;border:0;padding:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jcard .customer{font-size:17px;font-weight:700;letter-spacing:-.01em;text-align:left;cursor:pointer;background:none;border:0;padding:0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .jcard .customer:hover{text-decoration:underline;text-underline-offset:3px}
 .date-tile{width:50px;flex:none;border-radius:9px;text-align:center;line-height:1;padding:7px 0 6px;background:var(--info-soft);color:var(--info-text);border:1px solid var(--info-line)}
 .date-tile b{display:block;font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
@@ -197,6 +197,9 @@ a{color:inherit}
 .meta{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--text-2);font-size:13px}
 .meta span{display:inline-flex;align-items:center;gap:5px;min-width:0}
 .meta b{color:var(--text);font-weight:620}
+.jcard.done{opacity:.72}
+.jcard .materials{font-size:14px;color:#334155}
+.badge .lucide{flex-shrink:0}
 
 /* calendar board */
 .board-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface);max-height:calc(100dvh - 260px)}
@@ -1979,33 +1982,57 @@ dialog.modal::backdrop{background:var(--scrim);backdrop-filter:blur(2px);-webkit
     const cls = f.atrasada || f.excedeu ? "late" : job.status === "andamento" ? "go" : job.status === "concluida" ? "ok" : job.status === "pausada" ? "pause" : "";
     return `<div class="date-tile ${cls}" title="Início ${C.fmtDate(a.inicio)}"><b>${a.inicio.slice(8, 10)}</b><span>${MESC[+a.inicio.slice(5, 7) - 1]}</span></div>`;
   }
+  // Job card laid out like the delivery card of the Entregas app: name + status on top, then when,
+  // where/who, materials, readiness pills, main action with warning pills, contact + details.
+  const ibadge = (tone, icon, txt) => `<span class="badge tone-${tone}">${ic(icon, 13)}${h(txt)}</span>`;
   function jobCard(job, c) {
     c = c || getCtx();
-    const f = C.jobFlags(job, c), a = job.agenda || {};
-    const crew = crewLabel(job, c);
-    const u = job.prio === "alta" && !["concluida", "cancelada"].includes(job.status) ? " u-alta" : job.prio === "media" && !["concluida", "cancelada"].includes(job.status) ? " u-media" : "";
-    const when = a.inicio ? `${relDay(a.inicio, c.today)}${a.hora ? " · " + a.hora : ""}${f.fimPrevisto && f.fimPrevisto !== a.inicio ? " → " + C.fmtDate(f.fimPrevisto) : ""}` : "Sem data marcada";
-    return `<article class="card jcard${u}">
-      <div class="row top" style="gap:12px">${dateTile(job, c)}
-        <div class="stack tight grow"><button type="button" class="customer" data-open="${h(job.id)}">${h(job.cliente)}</button>
-          <div class="row wrap" style="gap:5px">${statusBadges(job, c)}</div></div></div>
-      ${job.servico && job.tipo === "manutencao" ? `<div class="small"><b>Serviço:</b> ${h(job.servico)}</div>` : ""}
-      ${matsLabel(job) ? `<div class="small">${h(matsLabel(job))}</div>` : ""}
-      <div class="meta"><span>${ic("clock", 13)} ${h(when)}</span>
-        ${crew ? `<span>${ic("user", 13)} <b>${h(crew)}</b></span>` : `<span style="color:var(--danger-text)">${ic("user-x", 13)} Sem instalador</span>`}
-        ${job.endereco && job.endereco.bairro ? `<span>${ic("map-pin", 13)} ${h(job.endereco.bairro)}</span>` : ""}</div>
-      ${quickActions(job, c)}
+    const f = C.jobFlags(job, c), a = job.agenda || {}, e = job.endereco || {};
+    const crew = crewLabel(job, c), open = !["concluida", "cancelada"].includes(job.status);
+    const u = job.prio === "alta" && open ? " u-alta" : job.prio === "media" && open ? " u-media" : "";
+    const st = C.STATUS[job.status] || C.STATUS.agendada;
+    const when = a.inicio ? `${relDay(a.inicio, c.today)}${a.hora ? " · " + a.hora : " · Sem horário definido"}${f.fimPrevisto && f.fimPrevisto !== a.inicio ? " → " + C.fmtDate(f.fimPrevisto) : ""}` : "Sem data marcada";
+    const sub = [job.tipo === "manutencao" ? "Manutenção" : "Instalação", job.tipo === "manutencao" ? job.servico : "", (C.COMPLEXITY[job.complexidade] || {}).label].filter(Boolean).join(" · ");
+    const right = [badge(st.tone, st.label, true)];
+    if (job.prio && C.PRIORITY[job.prio] && open && job.prio !== "baixa") right.push(ibadge(job.prio === "alta" ? "danger" : "warning", "triangle-alert", C.PRIORITY[job.prio].label));
+    const p = job.prontidao || {};
+    const ready = open ? C.READINESS.filter(r => p[r.id]).map(r => ibadge("success", "check", r.label)) : [];
+    const warn = [];
+    if (open) {
+      const issues = C.validateJob(job, c), rd = C.readiness(job, c);
+      if (f.atrasada) warn.push(ibadge("danger", "clock", "Atrasada"));
+      if (f.excedeu) warn.push(ibadge("danger", "clock", "Passou do prazo"));
+      if (f.semInstalador && job.status !== "rascunho") warn.push(ibadge("danger", "user-x", "Sem instalador"));
+      if (C.hasErrors(issues)) warn.push(ibadge("danger", "ban", (job.overrides || []).length ? "Conflito aceito" : "Conflito de agenda"));
+      if (rd.state === "bloqueada") warn.push(ibadge("danger", "package", "Não está pronta"));
+      else if (rd.state === "pendente" && a.inicio) warn.push(ibadge("warning", "package", "Prontidão pendente"));
+      if (!e.completo) warn.push(ibadge("warning", "map-pin-off", "Endereço incompleto"));
+      if (f.iniciaHoje) warn.push(ibadge("info", "play", "Inicia hoje"));
+      if (f.terminaHoje) warn.push(ibadge("success", "circle-check", "Termina hoje"));
+    }
+    const wa = job.fone ? C.waLink(job.fone, C.waTemplates(job, c).cliente[0].text) : null;
+    return `<article class="card jcard${u}${open ? "" : " done"}">
+      <div class="row between top" style="gap:10px">
+        <div class="stack tight grow"><button type="button" class="customer" data-open="${h(job.id)}">${h(job.cliente)}</button><span class="small muted">${h(sub)}</span></div>
+        <div class="stack tight" style="align-items:flex-end;gap:6px">${right.join("")}</div></div>
+      <div class="meta"><span>${ic("clock", 14)} ${h(when)}</span></div>
+      <div class="meta"><span>${ic("map-pin", 14)} ${h(e.bairro || e.completo || "Endereço não informado")}</span>
+        ${crew ? `<span>${ic("user", 14)} ${h(crew)}</span>` : `<span style="color:var(--danger-text)">${ic("user-x", 14)} Sem instalador</span>`}</div>
+      ${matsLabel(job) ? `<div class="materials">${h(matsLabel(job))}</div>` : ""}
+      ${ready.length ? `<div class="row wrap" style="gap:6px">${ready.join("")}</div>` : ""}
+      ${mainAction(job, c, warn)}
+      <div class="row wrap" style="gap:8px">${wa ? `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="${h(wa)}">${ic("message-circle", 15)}WhatsApp</a>` : ""}<button type="button" class="btn ghost sm" data-open="${h(job.id)}">Detalhes</button></div>
     </article>`;
   }
-  function quickActions(job, c) {
-    if (!App.canEdit || c.virtual) return `<div class="row"><button type="button" class="btn ghost sm" data-open="${h(job.id)}">${ic("eye", 15)}Ver detalhes</button></div>`;
-    const b = [];
-    if (job.status === "rascunho" || job.status === "aguardando" || (job.status === "agendada" && (!job.agenda || !job.agenda.inicio || !(job._members || []).length))) b.push(`<button type="button" class="btn primary sm" data-edit="${h(job.id)}" data-step="2">${ic("sparkles", 15)}Agendar</button>`);
-    else if (job.status === "agendada") b.push(`<button type="button" class="btn accent sm" data-act="inicio" data-id="${h(job.id)}">${ic("play", 15)}Iniciar</button>`);
-    else if (job.status === "andamento") b.push(`<button type="button" class="btn success sm" data-act="fim" data-id="${h(job.id)}">${ic("circle-check", 15)}Concluir</button>`);
-    else if (job.status === "pausada") b.push(`<button type="button" class="btn accent sm" data-act="retomada" data-id="${h(job.id)}">${ic("play", 15)}Retomar</button>`);
-    b.push(`<button type="button" class="btn ghost sm" data-open="${h(job.id)}">Detalhes</button>`);
-    return `<div class="row wrap">${b.join("")}</div>`;
+  function mainAction(job, c, warn) {
+    let btn = "";
+    if (App.canEdit && !c.virtual) {
+      if (job.status === "rascunho" || job.status === "aguardando" || (job.status === "agendada" && (!job.agenda || !job.agenda.inicio || !(job._members || []).length))) btn = `<button type="button" class="btn primary sm" data-edit="${h(job.id)}" data-step="2">${ic("sparkles", 15)}Agendar</button>`;
+      else if (job.status === "agendada") btn = `<button type="button" class="btn primary sm" data-act="inicio" data-id="${h(job.id)}">${ic("play", 15)}Iniciar obra</button>`;
+      else if (job.status === "andamento") btn = `<button type="button" class="btn primary sm" data-act="fim" data-id="${h(job.id)}">${ic("circle-check", 15)}Concluir obra</button>`;
+      else if (job.status === "pausada") btn = `<button type="button" class="btn primary sm" data-act="retomada" data-id="${h(job.id)}">${ic("play", 15)}Retomar obra</button>`;
+    }
+    return btn || warn.length ? `<div class="row wrap" style="gap:8px">${btn}${warn.join("")}</div>` : "";
   }
   const emptyHTML = (icon, title, text, btn) => `<div class="empty"><div class="empty-icon">${ic(icon, 22)}</div><h3>${h(title)}</h3>${text ? `<p>${h(text)}</p>` : ""}${btn && App.canEdit ? `<button class="btn primary" type="button" data-new style="margin-top:6px">${ic("plus", 16)}${h(btn)}</button>` : ""}</div>`;
   const issueHTML = i => `<div class="issue ${i.severity === "erro" ? "tone-danger" : "tone-warning"}">${ic(i.severity === "erro" ? "ban" : "triangle-alert", 16)}<span>${h(i.msg)}</span></div>`;
