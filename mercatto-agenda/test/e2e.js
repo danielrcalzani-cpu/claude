@@ -87,7 +87,7 @@ const assert = (c, m) => { if (!c) throw new Error("ASSERT: " + m); console.log(
   }
   await p.click("[data-agv=dia]"); await p.waitForTimeout(300); await shot(p, "10-agenda-day");
   await p.click("[data-agv=mes]"); await p.waitForTimeout(300); await shot(p, "11-agenda-month");
-  for (const r of ["instalacoes", "manutencoes", "mapa", "desempenho", "ajustes"]) { await p.goto("file://" + page + "#" + r); await p.waitForTimeout(500); await shot(p, "12-" + r); }
+  for (const r of ["instalacoes", "manutencoes", "desempenho", "ajustes"]) { await p.goto("file://" + page + "#" + r); await p.waitForTimeout(500); await shot(p, "12-" + r); }
   await p.goto("file://" + page + "#central"); await p.waitForTimeout(500);
   await p.click(".jcard .customer, [data-open]"); await p.waitForTimeout(400); await shot(p, "13-detail");
 

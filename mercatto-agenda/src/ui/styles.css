@@ -289,11 +289,6 @@ table.table{width:100%;border-collapse:collapse;font-size:13.5px}
 .timeline li:last-child::before{display:none}
 .tl-dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)}
 
-/* map */
-.mapbox{position:relative;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface-2);overflow:hidden}
-.mapbox svg{display:block;width:100%;height:auto}
-.pin{cursor:pointer}
-
 /* dialogs */
 dialog.modal{border:0;padding:0;width:min(600px,calc(100vw - 32px));max-height:calc(100dvh - 40px);background:var(--surface);color:var(--text);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);flex-direction:column;overflow:hidden}
 dialog.modal.wide{width:min(900px,calc(100vw - 32px))}

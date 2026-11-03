@@ -231,7 +231,7 @@
       ${c.virtual ? `<div class="banner tone-warning small">${ic("info", 16)}<span>Atualize os dados (em Configurações) para editar esta obra.</span></div>` : ""}
       <div class="row wrap">
         ${canEdit ? `<button class="btn sm" type="button" data-edit="${h(job.id)}">${ic("pen-line", 15)}Editar</button><button class="btn sm" type="button" data-move="${h(job.id)}">${ic("calendar-clock", 15)}Remarcar</button>` : ""}
-        ${mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="${h(mapsUrl)}">${ic("navigation", 15)}Mapa</a>` : ""}
+        ${mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="${h(mapsUrl)}">${ic("navigation", 15)}Google Maps</a>` : ""}
         ${job.fone ? `<div class="bell-wrap"><button class="btn sm" type="button" data-wamenu>${ic("message-circle", 15)}WhatsApp cliente</button><div class="card popover" data-wapop hidden><div class="rows">${tpl.cliente.map(t => `<a class="rowitem" target="_blank" rel="noopener noreferrer" href="${h(C.waLink(job.fone, t.text))}">${ic("message-circle", 15)}<span class="grow small">${h(t.label)}</span></a>`).join("")}</div></div></div>` : ""}
         ${crewPhones.length ? `<div class="bell-wrap"><button class="btn sm" type="button" data-wamenu>${ic("hard-hat", 15)}WhatsApp instalador</button><div class="card popover" data-wapop hidden><div class="rows">${crewPhones.map(i => tpl.instalador.map(t => `<a class="rowitem" target="_blank" rel="noopener noreferrer" href="${h(C.waLink(i.fone, t.text))}"><span class="grow small">${h(t.label)} — ${h(i.nome)}</span></a>`).join("")).join("")}</div></div></div>` : ""}
       </div>
@@ -324,7 +324,6 @@
     central: { title: "Central de Obras", icon: "layout-dashboard", group: "Operação" },
     agenda: { title: "Agenda Semanal", icon: "calendar-days", group: "Operação" },
     instaladores: { title: "Instaladores", icon: "hard-hat", group: "Operação" },
-    mapa: { title: "Mapa de Obras", icon: "map", group: "Operação" },
     instalacoes: { title: "Instalações", icon: "hammer", group: "Obras" },
     manutencoes: { title: "Manutenções", icon: "wrench", group: "Obras" },
     desempenho: { title: "Desempenho da Equipe", icon: "chart-column", group: "Gestão" },
@@ -341,7 +340,7 @@
 
   function allowedRoutes() {
     const r = S.role;
-    if (r === "admin" || r === "coordenador") return ["central", "agenda", "instaladores", "mapa", "instalacoes", "manutencoes", "desempenho", "ajustes"];
+    if (r === "admin" || r === "coordenador") return ["central", "agenda", "instaladores", "instalacoes", "manutencoes", "desempenho", "ajustes"];
     if (r === "instalador") return ["minha-agenda"];
     if (r === "visualizador") return ["quadro"];
     return ["sem-acesso"];

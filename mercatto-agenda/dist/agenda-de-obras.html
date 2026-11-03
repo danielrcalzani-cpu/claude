@@ -293,11 +293,6 @@ table.table{width:100%;border-collapse:collapse;font-size:13.5px}
 .timeline li:last-child::before{display:none}
 .tl-dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)}
 
-/* map */
-.mapbox{position:relative;border:1px solid var(--border);border-radius:var(--r-lg);background:var(--surface-2);overflow:hidden}
-.mapbox svg{display:block;width:100%;height:auto}
-.pin{cursor:pointer}
-
 /* dialogs */
 dialog.modal{border:0;padding:0;width:min(600px,calc(100vw - 32px));max-height:calc(100dvh - 40px);background:var(--surface);color:var(--text);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);flex-direction:column;overflow:hidden}
 dialog.modal.wide{width:min(900px,calc(100vw - 32px))}
@@ -2113,7 +2108,7 @@ dialog.modal::backdrop{background:var(--scrim)}
       ${c.virtual ? `<div class="banner tone-warning small">${ic("info", 16)}<span>Atualize os dados (em Configurações) para editar esta obra.</span></div>` : ""}
       <div class="row wrap">
         ${canEdit ? `<button class="btn sm" type="button" data-edit="${h(job.id)}">${ic("pen-line", 15)}Editar</button><button class="btn sm" type="button" data-move="${h(job.id)}">${ic("calendar-clock", 15)}Remarcar</button>` : ""}
-        ${mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="${h(mapsUrl)}">${ic("navigation", 15)}Mapa</a>` : ""}
+        ${mapsUrl ? `<a class="btn sm" target="_blank" rel="noopener noreferrer" href="${h(mapsUrl)}">${ic("navigation", 15)}Google Maps</a>` : ""}
         ${job.fone ? `<div class="bell-wrap"><button class="btn sm" type="button" data-wamenu>${ic("message-circle", 15)}WhatsApp cliente</button><div class="card popover" data-wapop hidden><div class="rows">${tpl.cliente.map(t => `<a class="rowitem" target="_blank" rel="noopener noreferrer" href="${h(C.waLink(job.fone, t.text))}">${ic("message-circle", 15)}<span class="grow small">${h(t.label)}</span></a>`).join("")}</div></div></div>` : ""}
         ${crewPhones.length ? `<div class="bell-wrap"><button class="btn sm" type="button" data-wamenu>${ic("hard-hat", 15)}WhatsApp instalador</button><div class="card popover" data-wapop hidden><div class="rows">${crewPhones.map(i => tpl.instalador.map(t => `<a class="rowitem" target="_blank" rel="noopener noreferrer" href="${h(C.waLink(i.fone, t.text))}"><span class="grow small">${h(t.label)} — ${h(i.nome)}</span></a>`).join("")).join("")}</div></div></div>` : ""}
       </div>
@@ -2206,7 +2201,6 @@ dialog.modal::backdrop{background:var(--scrim)}
     central: { title: "Central de Obras", icon: "layout-dashboard", group: "Operação" },
     agenda: { title: "Agenda Semanal", icon: "calendar-days", group: "Operação" },
     instaladores: { title: "Instaladores", icon: "hard-hat", group: "Operação" },
-    mapa: { title: "Mapa de Obras", icon: "map", group: "Operação" },
     instalacoes: { title: "Instalações", icon: "hammer", group: "Obras" },
     manutencoes: { title: "Manutenções", icon: "wrench", group: "Obras" },
     desempenho: { title: "Desempenho da Equipe", icon: "chart-column", group: "Gestão" },
@@ -2223,7 +2217,7 @@ dialog.modal::backdrop{background:var(--scrim)}
 
   function allowedRoutes() {
     const r = S.role;
-    if (r === "admin" || r === "coordenador") return ["central", "agenda", "instaladores", "mapa", "instalacoes", "manutencoes", "desempenho", "ajustes"];
+    if (r === "admin" || r === "coordenador") return ["central", "agenda", "instaladores", "instalacoes", "manutencoes", "desempenho", "ajustes"];
     if (r === "instalador") return ["minha-agenda"];
     if (r === "visualizador") return ["quadro"];
     return ["sem-acesso"];
@@ -2496,7 +2490,7 @@ dialog.modal::backdrop{background:var(--scrim)}
       <div class="field span-3"><label for="fBairro">Bairro</label><input class="input" id="fBairro" data-k="endereco.bairro" list="dlBairros" value="${h(e.bairro)}" placeholder="Ex.: Adrianópolis"><datalist id="dlBairros">${[...new Set(A.getCtx().jobs.map(j => (j.endereco || {}).bairro).filter(Boolean))].sort().map(b => `<option value="${h(b)}">`).join("")}</datalist></div>
       <div class="field span-6"><label for="fEnd">Endereço completo</label><input class="input" id="fEnd" data-k="endereco.completo" value="${h(e.completo)}" placeholder="Rua, número, condomínio, apartamento"></div>
       <div class="field span-3"><label for="fRef">Ponto de referência</label><input class="input" id="fRef" data-k="endereco.ref" value="${h(e.ref)}"></div>
-      <div class="field span-3"><label for="fCoord">Localização no mapa</label><input class="input" id="fCoord" placeholder="Cole o link do Google Maps ou -3.10, -60.02" value="${C.hasCoords(e) ? `${e.lat}, ${e.lng}` : ""}"><span class="hint" id="coordHint">${C.hasCoords(e) ? "Localização definida." : "Opcional. Melhora as sugestões por proximidade e o mapa."}</span></div>
+      <div class="field span-3"><label for="fCoord">Coordenadas do local</label><input class="input" id="fCoord" placeholder="Cole o link do Google Maps ou -3.10, -60.02" value="${C.hasCoords(e) ? `${e.lat}, ${e.lng}` : ""}"><span class="hint" id="coordHint">${C.hasCoords(e) ? "Localização definida." : "Opcional. Melhora as sugestões por proximidade."}</span></div>
     </div>`;
   }
   /* ---------- step 2: service ---------- */
@@ -2724,7 +2718,7 @@ dialog.modal::backdrop{background:var(--scrim)}
   }
 })();
 </script>
-<script>/* Operational views: Central de Obras, Instalações/Manutenções lists, Agenda Semanal, Mapa de Obras. */
+<script>/* Operational views: Central de Obras, Instalações/Manutenções lists, Agenda Semanal. */
 (function () {
   "use strict";
   const A = window.App, C = A.C, Store = A.Store, S = A.S, { $, $$, h, ic, badge } = A;
@@ -2732,7 +2726,6 @@ dialog.modal::backdrop{background:var(--scrim)}
   ui.central = { filter: null };
   ui.list = { instalacao: { view: "status", inst: "", q: "", done: false }, manutencao: { view: "status", inst: "", q: "", done: false } };
   ui.agenda = { view: null, date: null, inst: "", team: "", mat: "", tipo: "" };
-  ui.mapa = { range: "semana", inst: "", status: "" };
 
   const open = j => !["concluida", "cancelada"].includes(j.status);
   const isEmObra = st => st.code === "em_obra" || st.code === "em_obra_escritorio";
@@ -3036,67 +3029,6 @@ dialog.modal::backdrop{background:var(--scrim)}
     });
   }
 
-  /* =========================== MAPA DE OBRAS =========================== */
-  const MANAUS = { latMin: -3.16, latMax: -2.94, lngMin: -60.11, lngMax: -59.90 };
-  A.views.mapa = function (el) {
-    const c = A.getCtx(), st = ui.mapa;
-    const end = st.range === "hoje" ? c.today : st.range === "semana" ? C.addDays(c.today, 6) : "9999-12-31";
-    const jobs = c.jobs.filter(j => {
-      if (j.status === "cancelada" || (st.range !== "todas" && j.status === "concluida")) return false;
-      if (st.status && j.status !== st.status) return false;
-      if (st.inst && !(j._members || []).includes(st.inst)) return false;
-      if (st.range === "todas") return true;
-      const al = C.allocate(j, c);
-      return j.status === "andamento" || al.blocks.some(b => b.date >= c.today && b.date <= end) || (j.agenda && j.agenda.inicio && j.agenda.inicio >= c.today && j.agenda.inicio <= end);
-    });
-    const located = jobs.filter(j => C.hasCoords(j.endereco)), missing = jobs.filter(j => !C.hasCoords(j.endereco));
-    const bb = { ...MANAUS };
-    for (const j of located) { bb.latMin = Math.min(bb.latMin, j.endereco.lat - .01); bb.latMax = Math.max(bb.latMax, j.endereco.lat + .01); bb.lngMin = Math.min(bb.lngMin, j.endereco.lng - .01); bb.lngMax = Math.max(bb.lngMax, j.endereco.lng + .01); }
-    const W = 900, kx = Math.cos((bb.latMin + bb.latMax) / 2 * Math.PI / 180), Hh = Math.round(W * (bb.latMax - bb.latMin) / ((bb.lngMax - bb.lngMin) * kx));
-    const X = lng => ((lng - bb.lngMin) / (bb.lngMax - bb.lngMin)) * W, Y = lat => ((bb.latMax - lat) / (bb.latMax - bb.latMin)) * Hh;
-    const color = j => ({ andamento: "var(--warning)", concluida: "var(--success)", pausada: "var(--pause)", aguardando: "var(--accent)" }[j.status] || (C.jobFlags(j, c).atrasada ? "var(--danger)" : "var(--info)"));
-    const kmPerX = ((bb.lngMax - bb.lngMin) * 111.32 * kx) / W;
-    const bar = 2 / kmPerX;
-    el.innerHTML = `<div class="stack">
-      <div class="page-head"><div><h2 class="h-title">Mapa de Obras</h2><p>Posição real de cada obra a partir das coordenadas cadastradas. O mapa de ruas, a busca de endereço e o tempo de trajeto dependem de um serviço de mapas externo que ainda não está configurado; por isso as obras aparecem sobre uma grade, e as distâncias são em linha reta.</p></div></div>
-      <div class="card pad row wrap" style="padding:10px;gap:8px">
-        <div class="segmented" role="group" aria-label="Período"><button type="button" data-mr="hoje" aria-pressed="${st.range === "hoje"}">Hoje</button><button type="button" data-mr="semana" aria-pressed="${st.range === "semana"}">Esta semana</button><button type="button" data-mr="todas" aria-pressed="${st.range === "todas"}">Todas</button></div>
-        <select class="select sm" id="mpInst" style="width:auto" aria-label="Instalador"><option value="">Todos os instaladores</option>${(c.installers || []).map(i => `<option value="${h(i.id)}" ${st.inst === i.id ? "selected" : ""}>${h(i.nome)}</option>`).join("")}</select>
-        <select class="select sm" id="mpSt" style="width:auto" aria-label="Situação"><option value="">Todas as situações</option>${Object.entries(C.STATUS).filter(([k]) => k !== "cancelada").map(([k, v]) => `<option value="${k}" ${st.status === k ? "selected" : ""}>${h(v.label)}</option>`).join("")}</select>
-        <span class="small muted">${located.length} no mapa · ${missing.length} sem localização</span></div>
-      <div class="grid-2">
-        <div class="mapbox"><svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Posição das obras em Manaus">
-          <rect width="${W}" height="${Hh}" fill="var(--surface-2)"/>
-          ${[...Array(9)].map((_, k) => `<line x1="${(k + 1) * W / 10}" y1="0" x2="${(k + 1) * W / 10}" y2="${Hh}" stroke="var(--border)" stroke-width="1"/>`).join("")}${[...Array(9)].map((_, k) => `<line x1="0" y1="${(k + 1) * Hh / 10}" x2="${W}" y2="${(k + 1) * Hh / 10}" stroke="var(--border)" stroke-width="1"/>`).join("")}
-          <g transform="translate(${W - 40},34)"><path d="M0 -18 L7 6 L0 0 L-7 6 Z" fill="var(--text-2)"/><text y="22" text-anchor="middle" font-size="13" fill="var(--text-2)">N</text></g>
-          <g transform="translate(20,${Hh - 20})"><line x1="0" y1="0" x2="${bar}" y2="0" stroke="var(--text-2)" stroke-width="3"/><text x="${bar / 2}" y="-7" text-anchor="middle" font-size="12" fill="var(--text-2)">2 km</text></g>
-          ${located.map(j => `<g class="pin" data-open="${h(j.id)}" tabindex="0" role="button" aria-label="${h(j.cliente)}"><circle cx="${X(j.endereco.lng)}" cy="${Y(j.endereco.lat)}" r="9" fill="${color(j)}" stroke="var(--surface)" stroke-width="3"/><title>${h(j.cliente)} — ${h(A.crewLabel(j, c) || "sem instalador")} — ${h((C.STATUS[j.status] || {}).label)}${j.agenda && j.agenda.inicio ? " — " + C.fmtDate(j.agenda.inicio) : ""}</title></g>`).join("")}
-          ${!located.length ? `<text x="${W / 2}" y="${Hh / 2}" text-anchor="middle" font-size="16" fill="var(--text-2)">Nenhuma obra com localização neste filtro</text>` : ""}
-        </svg></div>
-        <div class="stack">
-          <section class="card"><div class="card-head"><h3 class="h-section">No mapa (${located.length})</h3></div><div class="rows">${located.map(j => `<button type="button" class="rowitem" data-open="${h(j.id)}"><span style="width:12px;height:12px;border-radius:50%;background:${color(j)};flex:none"></span><span class="grow stack" style="gap:1px"><b class="small">${h(j.cliente)}</b><span class="tiny muted">${h([(j.endereco || {}).completo || (j.endereco || {}).bairro, A.crewLabel(j, c) || "Sem instalador", j.agenda && j.agenda.inicio ? C.fmtDate(j.agenda.inicio) : "Sem data", A.matsLabel(j).split(" · ")[0]].filter(Boolean).join(" · "))}</span></span></button>`).join("") || `<div class="card-body small muted">—</div>`}</div></section>
-          <section class="card"><div class="card-head"><h3 class="h-section">Sem localização (${missing.length})</h3></div><div class="rows">${missing.slice(0, 40).map(j => `<div class="rowitem" style="cursor:default"><span class="grow stack" style="gap:1px"><b class="small">${h(j.cliente)}</b><span class="tiny muted">${h((j.endereco || {}).completo || (j.endereco || {}).bairro || "Endereço não informado")}</span></span>${A.canEdit && !c.virtual ? `<button class="btn sm" type="button" data-setloc="${h(j.id)}">${ic("map-pin", 14)}Definir</button>` : ""}</div>`).join("") || `<div class="card-body small muted">Todas as obras do filtro têm localização.</div>`}</div></section>
-        </div></div></div>`;
-    $("#mpInst", el).addEventListener("change", e => { st.inst = e.target.value; A.views.mapa(el); });
-    $("#mpSt", el).addEventListener("change", e => { st.status = e.target.value; A.views.mapa(el); });
-  };
-  function setLocation(id) {
-    const c = A.getCtx(), j = c.jobsById[id], e = j.endereco || {};
-    const q = encodeURIComponent([e.completo, e.bairro, c.cfg.city].filter(Boolean).join(", "));
-    const d = A.openDialog({
-      title: "Definir localização", sub: h(j.cliente),
-      body: `<div class="stack"><ol class="small" style="margin:0;padding-left:18px"><li>${e.completo || e.bairro ? `<a href="https://www.google.com/maps/search/?api=1&query=${q}" target="_blank" rel="noopener noreferrer">Abra o endereço no Google Maps</a>` : "Abra o local no Google Maps"} e confira o ponto exato.</li><li>Copie o link da barra de endereço (ou toque e segure no ponto para copiar as coordenadas).</li><li>Cole abaixo.</li></ol>
-        <div class="field"><label for="locIn">Link ou coordenadas</label><input class="input" id="locIn" placeholder="https://www.google.com/maps/@-3.10,-60.02,17z ou -3.10, -60.02"><span class="hint" id="locHint">A posição é guardada exatamente como informada; nada é estimado pelo nome do bairro.</span></div></div>`,
-      foot: `<button class="btn" data-x type="button">Cancelar</button><button class="btn primary" type="button" id="locOk">Salvar localização</button>`
-    });
-    $("#locOk", d).addEventListener("click", async () => {
-      const p = C.parseCoords($("#locIn", d).value);
-      if (!p) { $("#locHint", d).textContent = "Não reconheci coordenadas neste texto."; $("#locHint", d).style.color = "var(--danger-text)"; return; }
-      await A.guard(() => Store.saveJob(id, { endereco: { ...e, lat: p.lat, lng: p.lng, coordFonte: "manual" } }), p.dentroDeManaus ? "Localização salva." : "Localização salva — parece estar fora de Manaus, confira.");
-      d.close();
-    });
-  }
-
   /* =========================== events =========================== */
   document.addEventListener("click", e => {
     const t = e.target; let x;
@@ -3109,10 +3041,7 @@ dialog.modal::backdrop{background:var(--scrim)}
     if ((x = t.closest("[data-agenda-inst]"))) { ui.agenda.inst = x.dataset.agendaInst; ui.agenda.view = "semana"; return; }
     if ((x = t.closest("[data-newslot]"))) { const [inst, d] = x.dataset.newslot.split("|"); A.openForm(null, { instaladorIds: [inst], agenda: { inicio: d, hora: "08:00" } }); return; }
     if ((x = t.closest(".cell.free")) && !t.closest(".blk")) { const [inst, d] = x.dataset.cell.split("|"); A.openForm(null, { instaladorIds: [inst], agenda: { inicio: d, hora: "08:00" } }); return; }
-    if ((x = t.closest("[data-mr]"))) { ui.mapa.range = x.dataset.mr; A.render(true); return; }
-    if ((x = t.closest("[data-setloc]"))) { setLocation(x.dataset.setloc); return; }
   });
-  document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".pin[data-open]")) { e.preventDefault(); A.openJob(e.target.dataset.open); } });
   A.ui.newPreset = () => (A.route === "manutencoes" ? { tipo: "manutencao" } : null);
 })();
 </script>

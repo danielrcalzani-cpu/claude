@@ -64,7 +64,7 @@
       <div class="field span-3"><label for="fBairro">Bairro</label><input class="input" id="fBairro" data-k="endereco.bairro" list="dlBairros" value="${h(e.bairro)}" placeholder="Ex.: Adrianópolis"><datalist id="dlBairros">${[...new Set(A.getCtx().jobs.map(j => (j.endereco || {}).bairro).filter(Boolean))].sort().map(b => `<option value="${h(b)}">`).join("")}</datalist></div>
       <div class="field span-6"><label for="fEnd">Endereço completo</label><input class="input" id="fEnd" data-k="endereco.completo" value="${h(e.completo)}" placeholder="Rua, número, condomínio, apartamento"></div>
       <div class="field span-3"><label for="fRef">Ponto de referência</label><input class="input" id="fRef" data-k="endereco.ref" value="${h(e.ref)}"></div>
-      <div class="field span-3"><label for="fCoord">Localização no mapa</label><input class="input" id="fCoord" placeholder="Cole o link do Google Maps ou -3.10, -60.02" value="${C.hasCoords(e) ? `${e.lat}, ${e.lng}` : ""}"><span class="hint" id="coordHint">${C.hasCoords(e) ? "Localização definida." : "Opcional. Melhora as sugestões por proximidade e o mapa."}</span></div>
+      <div class="field span-3"><label for="fCoord">Coordenadas do local</label><input class="input" id="fCoord" placeholder="Cole o link do Google Maps ou -3.10, -60.02" value="${C.hasCoords(e) ? `${e.lat}, ${e.lng}` : ""}"><span class="hint" id="coordHint">${C.hasCoords(e) ? "Localização definida." : "Opcional. Melhora as sugestões por proximidade."}</span></div>
     </div>`;
   }
   /* ---------- step 2: service ---------- */

@@ -14,7 +14,7 @@ src/store.js         Data layer: claude.ai db (shared) or browser-only fallback 
                      write tracking, field-event reconciliation, per-person projections, photo upload.
 src/ui/app.js        Shell, routing, roles, job detail panel, job actions, alerts bell, projections.
 src/ui/form.js       5-step job wizard (Cliente → Serviço → Agenda → Prontidão → Confirmação).
-src/ui/views-ops.js  Central de Obras, Instalações/Manutenções, Agenda Semanal, Mapa de Obras.
+src/ui/views-ops.js  Central de Obras, Instalações/Manutenções, Agenda Semanal.
 src/ui/views-team.js Instaladores, Desempenho, Configurações, Minha Agenda (installer), Quadro (viewer).
 src/ui/styles.css    Design system (Archivo, warm off-white, bamboo/gold accent, light + dark).
 src/ui/shell.html    Page skeleton; build.js inlines everything into dist/.
@@ -111,7 +111,7 @@ Before migration, legacy records are shown read-only as a preview.
 
 | Need | Status | What it needs |
 |---|---|---|
-| Street map tiles, address geocoding, driving times | Not available: the artifact sandbox blocks third-party map/geocoding requests and there is no server for secrets. The map uses real coordinates entered manually (pasted Google Maps link or "lat, lng") on a scaled grid; distances are labelled straight-line. | A maps provider (e.g. Google Maps Platform) behind a server-side proxy holding the API key; plug into `Core.parseCoords`/`referencePoint` and the map view. |
+| Street map tiles, address geocoding, driving times | Not included: the in-app map was removed on request, and the artifact sandbox blocks third-party map/geocoding requests. Optional coordinates (pasted Google Maps link or "lat, lng") are only used for straight-line proximity in recommendations; "Google Maps"/"Navegar" buttons open the address externally. | A maps provider behind a server-side proxy holding the API key; plug into `Core.parseCoords`/`referencePoint`. |
 | Device location for check-in | Not available to artifact pages in this account (no location capability). Check-ins record time only and the UI says so; nothing is shown as a live location. | A location capability or a native wrapper; then add coordinates to the field event. |
 | Automatic WhatsApp messages | Only `wa.me` deep links with prefilled text; the app never claims a message was sent. | WhatsApp Business API provider, server-side. |
 | Offline queue | The platform caches and replays reads; the UI shows pending/unsynced writes and offline state. There is no custom offline write queue. | A service worker (not available inside artifacts). |
