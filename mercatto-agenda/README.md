@@ -16,7 +16,7 @@ src/ui/app.js        Shell, routing, roles, job detail panel, job actions, alert
 src/ui/form.js       5-step job wizard (Cliente → Serviço → Agenda → Prontidão → Confirmação).
 src/ui/views-ops.js  Central de Obras, Instalações/Manutenções, Agenda Semanal.
 src/ui/views-team.js Instaladores, Desempenho, Configurações, Minha Agenda (installer), Quadro (viewer).
-src/ui/styles.css    Design system from the Mercatto Decor Entregas app (Inter, light gray, charcoal sidebar, gold accent).
+src/ui/styles.css    Design system from the Mercatto Decor Entregas app (Inter; Manrope on Obras pages; navy + gold palette).
 src/ui/shell.html    Page skeleton; build.js inlines everything into dist/.
 test/core.test.js    Scheduling tests (node:test).
 test/e2e.js          Browser run (Playwright) against an in-memory db stand-in.

@@ -414,6 +414,7 @@
     $("#tbTitle").textContent = R.title;
     $("#tbSub").textContent = longDay(C.today());
     const el = $("#content");
+    el.classList.toggle("font-obras", App.route === "instalacoes" || App.route === "manutencoes");
     const ready = S.mode === "local" || (S.mode === "db" && S.role && (S.role === "instalador" || S.role === "visualizador" || S.role === "sem_acesso" || (S.loaded.obras && S.loaded.instaladores && S.loaded.equipes && S.loaded.cfg)));
     if (!ready) { el.innerHTML = `<div class="stack loose"><div class="stats">${'<div class="skeleton" style="height:64px"></div>'.repeat(8)}</div><div class="skeleton" style="height:280px"></div></div>`; return; }
     const view = App.views[App.route === "sem-acesso" ? "semAcesso" : App.route.replace(/-([a-z])/g, (m, x) => x.toUpperCase())];
