@@ -1,0 +1,45 @@
+{
+  "db": {
+    "rules": [
+      {
+        "path": "",
+        "read": "admin",
+        "write": "admin"
+      },
+      {
+        "path": "cfg",
+        "read": "admin",
+        "write": "owner"
+      },
+      {
+        "path": "acesso",
+        "read": "admin",
+        "write": "admin"
+      },
+      {
+        "path": "acesso/{self}",
+        "read": "view",
+        "write": "admin"
+      },
+      {
+        "path": "campo",
+        "read": "admin",
+        "write": "admin"
+      },
+      {
+        "path": "campo/{self}",
+        "read": "interact",
+        "write": "interact"
+      }
+    ]
+  },
+  "user": {
+    "scopes": [
+      "profile"
+    ]
+  },
+  "downloads": true,
+  "assets": {
+    "upload": "interact"
+  }
+}

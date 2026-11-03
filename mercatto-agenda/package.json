@@ -1,0 +1,12 @@
+{
+  "name": "mercatto-agenda-de-obras",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Agenda de obras da Mercatto Decor: agendamento inteligente de instaladores (página única publicada no claude.ai).",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node --test test/core.test.js",
+    "e2e": "node test/e2e.js"
+  },
+  "license": "UNLICENSED"
+}

@@ -361,6 +361,12 @@
   function occupyingBlocks(job, ctx) {
     const al = allocate(job, ctx);
     const blocks = [...al.blocks];
+    // In progress with no usable duration (e.g. migrated without quantity): still occupies the crew today.
+    if (job.status === "andamento" && !blocks.length && job.agenda && job.agenda.inicio && job.agenda.inicio <= ctx.today) {
+      const day = companyDay(ctx.cfg, ctx.today);
+      if (day) blocks.push({ date: ctx.today, start: day.start, end: day.end, work: capacityMin(day), extra: true });
+      return blocks;
+    }
     if (job.status === "andamento" && al.fim && al.fim < ctx.today) {
       for (let d = addDays(al.fim, 1); d <= ctx.today; d = addDays(d, 1)) {
         const day = companyDay(ctx.cfg, d);
@@ -942,8 +948,8 @@
    * ==================================================================== */
   const MATERIAL_KEYWORDS = [
     [/SPC/, "spc"], [/90\s*[X×]\s*90/, "vinilico_90"], [/60\s*[X×]\s*60/, "vinilico_60"], [/REGUA/, "vinilico_reguas"],
-    [/CALIZA|VEXA|PLACA VINIL/, "placa_vinilica"], [/VINIL/, "vinilico"], [/TETO/, "teto_laminado"], [/CHATEAU/, "chateau_mur"],
-    [/BAMBU|FLEXIVEL/, "bambu"], [/RIPADO/, "ripado"], [/PAINEL LAMINADO/, "painel_laminado"], [/BOISERIE/, "boiserie"],
+    [/CALIZA|VEXA|PLACA VINIL/, "placa_vinilica"], [/VINIL/, "vinilico"], [/RIPADO/, "ripado"], [/TETO/, "teto_laminado"], [/CHATEAU/, "chateau_mur"],
+    [/BAMBU|FLEXIVEL/, "bambu"], [/PAINEL LAMINADO/, "painel_laminado"], [/BOISERIE/, "boiserie"],
     [/RODAPE/, "rodape"], [/FRISO|ACABAMENTO/, "acabamentos"]
   ];
   function materialsFromText(text) {
@@ -1085,7 +1091,7 @@
     TZ, tsParts, nowParts, today, addDays, dow, diffDays, weekStart, toMin, fromMin, fmtDate, fmtTs, isDate, DOW_PT, DOW_SHORT, MONTH_PT,
     MATERIALS, MAT, UNITS, REFERENCE_PRODUCTIVITY, COMPLEXITY, STATUS, OCCUPYING, PRIORITY, READINESS, DELAY_CAUSES, DEFAULT_WEEK,
     defaultConfig, defaultHolidays, easter, norm, companyDay, installerDay, blockedOn, capacityMin, jobMembers, jobMaterials,
-    estimateDuration, historicalProductivity, plannedHours, allocate, buildContext, buildOccupancy, validateJob, validateAll, hasErrors,
+    estimateDuration, historicalProductivity, plannedHours, allocate, buildContext, buildOccupancy, occupyingBlocks, validateJob, validateAll, hasErrors,
     readiness, jobFlags, installerStatus, workload, nextFreeDay, haversineKm, parseCoords, hasCoords, referencePoint,
     recommend, nextAvailableDate, buildAlerts, buildSuggestions, performance, ROLES, PERMISSIONS, can, DB_RULES, ruleAllows,
     materialsFromText, parseQuantity, planMigration, legacyHours, makeId, waLink, waNumber, waTemplates, fmtNum, workingDaysBetween, relDay

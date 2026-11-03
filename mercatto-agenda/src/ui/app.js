@@ -49,11 +49,10 @@
   }
 
   /* ---------------- context ---------------- */
-  let ctx = null, ctxKey = null, virtual = null;
+  let ctx = null, virtual = null;
   /** Before migration, legacy records are shown through an in-memory plan (read-only). */
   function getCtx() {
-    const key = [S.jobs, S.installers, S.teams, S.cfg, S.campo, S.acessos].map(x => x).length + ":" + Store.S._v;
-    if (ctx && ctxKey === key && ctx.today === C.today()) return ctx;
+    if (ctx && ctx.today === C.today()) return ctx;
     const cfg = S.cfg || C.defaultConfig();
     let installers = S.installers, teams = S.teams, jobs = S.jobs.filter(j => j.v === 2);
     virtual = null;
@@ -68,7 +67,6 @@
     ctx = C.buildContext({ cfg, installers, teams, jobs }, new Date());
     ctx.events = fieldEvents();
     ctx.virtual = !!virtual;
-    ctxKey = key;
     return ctx;
   }
   function withLegacyHours(j, cfg) {
@@ -402,6 +400,7 @@
     else if (S.lastError) { cls = "bad"; txt = "Falha ao salvar — tente de novo"; }
     else txt = S.mode === "db" ? "Sincronizado com a equipe" : "Conectando…";
     sy.className = "sync " + cls; sy.innerHTML = `<span class="dot"></span><span>${h(txt)}</span>`; sy.title = d.label;
+    if (S.me && S.me.name) { $("#meName").textContent = S.me.name; $("#meAvatar").textContent = initials(S.me.name); }
     $("#meRole").textContent = S.role ? (C.ROLES[S.role] || { label: "Sem acesso" }).label : "Carregando…";
   }
 

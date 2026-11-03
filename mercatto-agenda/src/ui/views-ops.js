@@ -175,9 +175,7 @@
     for (const j of c.jobs) {
       if (j.status === "cancelada") continue;
       if (j.status === "rascunho" && !(j.agenda || {}).inicio) continue;
-      const al = C.allocate(j, c);
-      let blocks = al.blocks;
-      if (j.status === "andamento" && al.fim && al.fim < c.today) { blocks = blocks.slice(); for (let d = C.addDays(al.fim, 1); d <= c.today; d = C.addDays(d, 1)) { const day = C.companyDay(c.cfg, d); if (day) blocks.push({ date: d, start: day.start, end: day.end, extra: true }); } }
+      const blocks = j.status === "andamento" ? C.occupyingBlocks(j, c) : C.allocate(j, c).blocks;
       for (const b of blocks) {
         if (b.date < fromDate || b.date > toDate) continue;
         const ms = j._members || [];
@@ -254,14 +252,14 @@
         for (const i of rows) {
           const list = ((idx[i.id] || {})[d] || []).filter(x => jobOk(x.j));
           const day = C.installerDay(i, c.cfg, d), blk = C.blockedOn(i, d);
-          html += `<div class="team-row" style="grid-template-columns:170px 1fr"><div class="row" style="gap:8px"><span class="avatar">${h(A.initials(i.nome))}</span><b class="small">${h(i.nome)}</b></div>
+          html += `<div class="team-row day-row"><div class="row" style="gap:8px"><span class="avatar">${h(A.initials(i.nome))}</span><b class="small">${h(i.nome)}</b></div>
             <div class="dayline" style="${!day || blk ? "background:var(--unavail)" : ""}">${[8, 10, 12, 14, 16, 18].map(hh => `<span class="hr" style="left:${pct(hh * 60)}%">${hh}h</span>`).join("")}
               ${!day || blk ? `<span class="offlabel" style="position:absolute;left:8px;top:18px">${h(blk ? (blk.motivo || blk.tipo) : "Folga")}</span>` : ""}
               ${list.map(x => blkHTML(x.j, x.b, conflictIds, { style: `left:${pct(x.b.start)}%;width:${Math.max(6, pct(x.b.end) - pct(x.b.start))}%` })).join("")}
               ${day && !blk && A.canEdit && !list.length ? `<button class="btn ghost sm" type="button" data-newslot="${h(i.id)}|${d}" style="position:absolute;right:6px;top:12px">${ic("plus", 14)}Livre — criar obra</button>` : ""}</div></div>`;
         }
         const un = (unassigned[d] || []).filter(x => jobOk(x.j));
-        if (un.length) html += `<div class="team-row" style="grid-template-columns:170px 1fr"><b class="small" style="color:var(--danger-text)">Sem instalador</b><div class="row wrap">${un.map(x => `<span style="width:200px">${blkHTML(x.j, x.b, conflictIds)}</span>`).join("")}</div></div>`;
+        if (un.length) html += `<div class="team-row day-row"><b class="small" style="color:var(--danger-text)">Sem instalador</b><div class="row wrap">${un.map(x => `<span style="width:200px">${blkHTML(x.j, x.b, conflictIds)}</span>`).join("")}</div></div>`;
         out.innerHTML = html + `</div></div>`;
       } else {
         const first = st.date.slice(0, 8) + "01", gridStart = C.weekStart(first);

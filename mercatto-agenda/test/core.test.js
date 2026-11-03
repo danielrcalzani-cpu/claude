@@ -240,3 +240,10 @@ test("key workflow: new 45 m² SPC job gets an explained top-3 and updates capac
   const clash = { ...confirmed, id: "clash" };
   assert.ok(C.hasErrors(C.validateJob(clash, ctx)), "a second identical booking now conflicts");
 });
+
+test("an in-progress job without a usable duration still occupies its crew today", () => {
+  const ctx = ctxOf({ installers: [inst("ana")], jobs: [job("old", { status: "andamento", instaladorIds: ["ana"], itens: [{ mat: "painel_laminado", qtd: null }], agenda: { inicio: "2026-09-22", hora: "08:00", horas: null } })] });
+  assert.ok((ctx.occ.ana || {})["2026-11-04"], "occupied today");
+  const clash = job("new", { instaladorIds: ["ana"], agenda: { inicio: "2026-11-04", hora: "09:00", horas: 2 } });
+  assert.ok(codes(C.validateJob(clash, ctx)).includes("SOBREPOSICAO"));
+});

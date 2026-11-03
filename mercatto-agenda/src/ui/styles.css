@@ -121,6 +121,7 @@ a{color:inherit}
 .input:focus,.select:focus,.textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--focus)}
 .input[aria-invalid="true"]{border-color:var(--danger)}
 .input.sm,.select.sm{min-height:32px;padding:4px 9px;font-size:13.5px}
+.select.sm{padding-right:30px}
 .input-icon{position:relative}
 .input-icon>.lucide{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--text-3);pointer-events:none}
 .input-icon>.input{padding-left:36px}
@@ -196,6 +197,7 @@ a{color:inherit}
 .rowitem .ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex:none}
 .team-row{display:grid;grid-template-columns:minmax(150px,1.1fr) minmax(0,1.6fr) minmax(110px,.8fr) auto;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)}
 .team-row:last-child{border-bottom:0}
+.team-row.day-row{grid-template-columns:170px 1fr}
 
 /* job card */
 .jcard{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:9px;padding:13px 15px}
@@ -356,6 +358,8 @@ dialog.modal::backdrop{background:var(--scrim)}
 .ui-mobile .team-row{grid-template-columns:1fr auto;gap:6px 10px}
 .ui-mobile .team-row .tr-job{grid-column:1/-1}
 .ui-mobile .team-row .tr-extra{display:none}
+.ui-mobile .team-row.day-row{grid-template-columns:1fr;gap:6px}
+.ui-mobile .card.pad.row>.select.sm{flex:1 1 45%;min-width:0}
 .ui-mobile .btn{min-height:42px}
 .ui-mobile .btn.sm{min-height:38px;padding:0 12px}
 .ui-mobile .btn.icon.sm{width:38px}

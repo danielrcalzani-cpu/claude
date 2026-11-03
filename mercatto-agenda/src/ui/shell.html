@@ -1,0 +1,41 @@
+<title>Agenda de obras – Mercatto Decor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap">
+<style>/*CSS*/</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">/*SPRITE*/</svg>
+
+<aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">M</div><div><div class="brand-name">Mercatto Decor</div><div class="brand-sub">Agenda de obras</div></div></div>
+  <nav class="nav" id="nav"></nav>
+  <button type="button" class="nav-switch" id="uiSwitch"></button>
+  <div class="sidebar-foot">
+    <div class="sync" id="syncState" role="status" aria-live="polite"><span class="dot"></span><span>Conectando…</span></div>
+    <div class="row" style="gap:10px"><div class="avatar" id="meAvatar" aria-hidden="true">MD</div><div class="grow"><div class="small truncate" style="color:#fff" id="meName">Equipe Mercatto</div><div class="tiny" style="color:var(--side-muted)" id="meRole">Carregando…</div></div></div>
+  </div>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<div class="main">
+  <header class="topbar">
+    <button type="button" class="btn ghost icon mobile-only" id="btnMenu" aria-label="Abrir menu"><svg class="lucide" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-menu"/></svg></button>
+    <div class="grow"><h1 class="h-page truncate" id="tbTitle">Central de Obras</h1><div class="sub truncate" id="tbSub"></div></div>
+    <div class="bell-wrap">
+      <button type="button" class="btn ghost icon" id="btnBell" aria-label="Alertas"><svg class="lucide" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-bell"/></svg></button>
+      <span class="bell-dot" id="bellDot" hidden></span>
+      <section class="card popover" id="bellPop" hidden aria-label="Alertas operacionais"><div class="card-head"><h3 class="h-section">Alertas operacionais</h3></div><div class="rows" id="bellList"></div></section>
+    </div>
+    <button type="button" class="btn primary desktop-only" id="btnNewTop" data-new><svg class="lucide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-plus"/></svg>Nova obra</button>
+  </header>
+  <main class="content" id="content"></main>
+</div>
+<nav class="bottom-nav" id="bottomNav" aria-label="Navegação rápida" hidden></nav>
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script>/*CORE*/</script>
+<script>/*STORE*/</script>
+<script>/*APP*/</script>
+<script>/*FORM*/</script>
+<script>/*OPS*/</script>
+<script>/*TEAM*/</script>
+<script>window.App.boot();</script>
